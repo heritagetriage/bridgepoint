@@ -4,6 +4,8 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
+  base: "/", // ✅ Ensures correct asset paths on Netlify
+
   server: {
     host: "::",
     port: 8080,
@@ -15,16 +17,19 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
+
   plugins: [react(), mode === "development" && componentTagger()].filter(
     Boolean
   ),
+
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+
   build: {
-    chunkSizeWarningLimit: 1000, // optional
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -36,10 +41,8 @@ export default defineConfig(({ mode }) => ({
           }
         },
       },
-      // This tells Vite to NOT include Lottie in the build
       treeshake: {
         moduleSideEffects: (id) => {
-          // Mark only the modules with side effects — like lottie — as having them
           if (id.includes("three-stdlib/libs/lottie.js")) return true;
           return false;
         },
